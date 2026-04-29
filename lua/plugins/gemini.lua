@@ -1,7 +1,7 @@
 return {
 	"kiddos/gemini.nvim",
+  enable = false,:
 	opts = {
-		# completion = { enabled = true }, -- already default
-		completion = { enabled = false }, -- already default
+		completion = { enabled = false },
 	},
 }
