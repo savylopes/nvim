@@ -53,59 +53,45 @@ return {
 			},
 			handlers = {
 				function(server_name)
-					if server_name == "lua_ls" then
-						vim.lsp.config("lua_ls", {
-							settings = {
-								Lua = {
-									diagnostics = { globals = { "vim" } },
-									workspace = { checkThirdParty = false },
+				if server_name == "lua_ls" then
+					require("lspconfig").lua_ls.setup({
+						settings = {
+							Lua = {
+								diagnostics = { globals = { "vim" } },
+								workspace = { checkThirdParty = false },
+							},
+						},
+					})
+					return
+				end
+
+				if server_name == "pyright" then
+					require("lspconfig").pyright.setup({
+						on_init = function(client)
+							local root = client.config.root_dir
+							local venv = root .. "/.venv"
+							local python = venv .. "/bin/python"
+
+							if vim.fn.executable(python) == 1 then
+								client.config.settings.python.pythonPath = python
+								client.config.settings.python.venvPath = root
+								client.config.settings.python.venv = ".venv"
+								client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+							end
+						end,
+						settings = {
+							python = {
+								analysis = {
+									autoSearchPaths = true,
+									useLibraryCodeForTypes = true,
+									diagnosticMode = "workspace",
+									typeCheckingMode = "basic",
 								},
 							},
-						})
-					end
-
-					if server_name == "pyright" then
-						local util = require("lspconfig.util")
-						local path = util.path
-
-						local function get_python_path(workspace)
-							-- Use activated virtualenv.
-							if vim.env.VIRTUAL_ENV then
-								return path.join(vim.env.VIRTUAL_ENV, "bin", "python")
-							end
-
-							-- Find and use virtualenv from pipenv in workspace directory.
-							local match = vim.fn.glob(path.join(workspace, "Pipfile"))
-							if match ~= "" then
-								local venv = vim.fn.trim(vim.fn.system("PIPENV_PIPFILE=" .. match .. " pipenv --venv"))
-								return path.join(venv, "bin", "python")
-							end
-
-							-- Fallback to local .venv for uv/venv
-							local venv_path = path.join(workspace, ".venv", "bin", "python")
-							if vim.loop.fs_stat(venv_path) then
-								return venv_path
-							end
-
-							-- Default to system python
-							return vim.fn.exepath("python3") or vim.fn.exepath("python") or "python"
-						end
-
-						vim.lsp.config("pyright", {
-							before_init = function(_, config)
-								config.settings.python.pythonPath = get_python_path(config.root_dir)
-							end,
-							settings = {
-								python = {
-									analysis = {
-										autoSearchPaths = true,
-										useLibraryCodeForTypes = true,
-										diagnosticMode = "workspace",
-									},
-								},
-							},
-						})
-					end
+						},
+					})
+					return -- Skip vim.lsp.enable as lspconfig.setup already handles it
+				end
 
 					-- Enable the server
 					vim.lsp.enable(server_name)

@@ -10,3 +10,8 @@ vim.keymap.set('n', '<leader>pb', builtin.buffers, {})
 -- Search through help tags
 vim.keymap.set('n', '<leader>ph', builtin.help_tags, {})
 
+-- Tab navigation
+vim.keymap.set('n', '<A-Right>', ':tabnext<CR>', { desc = 'Next tab' })
+vim.keymap.set('n', '<A-Left>', ':tabprev<CR>', { desc = 'Previous tab' })
+vim.keymap.set('n', '<leader>tn', ':tabnew<CR>', { desc = 'New tab' })
+
