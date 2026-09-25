@@ -4,8 +4,9 @@ return {
 		"nvim-treesitter/nvim-treesitter",
 		"nvim-tree/nvim-web-devicons", -- Optional but highly recommended for stylized icons
 	},
-	ft = { "markdown" },
+	ft = { "markdown", "Avante" },
 	opts = {
+		file_types = { "markdown", "Avante" },
 		heading = {
 			sign = true,
 			icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
